@@ -26,6 +26,11 @@
 #ifndef MICROPY_INCLUDED_PIC16BIT_BOARD_H
 #define MICROPY_INCLUDED_PIC16BIT_BOARD_H
 
+#ifndef FCY
+#define FCY 40000000
+#endif
+#include <libpic30.h>
+
 void cpu_init(void);
 
 void led_init(void);
@@ -39,5 +44,8 @@ void uart_init(void);
 int uart_rx_any(void);
 int uart_rx_char(void);
 void uart_tx_char(int chr);
+
+#define MICROPY_HW_BOARD_NAME "dsPICSK"
+#define MICROPY_HW_MCU_NAME "dsPIC33"
 
 #endif // MICROPY_INCLUDED_PIC16BIT_BOARD_H

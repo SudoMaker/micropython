@@ -25,6 +25,7 @@
  */
 
 #include <stdint.h>
+#include <board.h>
 
 // options to control how MicroPython is built
 #define MICROPY_OBJ_REPR            (MICROPY_OBJ_REPR_B)
@@ -100,8 +101,6 @@ extern const struct _mp_obj_module_t pyb_module;
     mp_obj_t keyboard_interrupt_obj; \
 
 #define MICROPY_MPHALPORT_H "pic16bit_mphal.h"
-#define MICROPY_HW_BOARD_NAME "dsPICSK"
-#define MICROPY_HW_MCU_NAME "dsPIC33"
 
 // XC16 toolchain doesn't seem to define these
 typedef int intptr_t;

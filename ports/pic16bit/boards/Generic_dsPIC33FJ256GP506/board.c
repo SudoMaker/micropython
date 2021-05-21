@@ -24,8 +24,16 @@
  * THE SOFTWARE.
  */
 
-#include <p33Fxxxx.h>
+#include <xc.h>
 #include "board.h"
+
+#pragma config GWRP = OFF
+#pragma config GSS = GCP_OFF
+#pragma config FNOSC = FRC
+#pragma config FCKSM = CSECMD
+#pragma config OSCIOFNC = ON
+#pragma config POSCMD = NONE
+#pragma config FWDTEN = OFF
 
 /********************************************************************/
 // CPU

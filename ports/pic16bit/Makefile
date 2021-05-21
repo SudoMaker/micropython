@@ -1,4 +1,16 @@
+BOARD ?= PotatoPi_PICo24
+
+# If the build directory is not given, make it reflect the board name.
+BUILD ?= build-$(BOARD)
+
+BOARD_DIR ?= boards/$(BOARD)
+ifeq ($(wildcard $(BOARD_DIR)/.),)
+$(error Invalid BOARD specified: $(BOARD_DIR))
+endif
+
+
 include ../../py/mkenv.mk
+include $(BOARD_DIR)/mpconfigboard.mk
 
 # qstr definitions (must come before including py.mk)
 QSTR_DEFS = qstrdefsport.h
@@ -6,14 +18,12 @@ QSTR_DEFS = qstrdefsport.h
 # include py core make definitions
 include $(TOP)/py/py.mk
 
-XCVERSION ?= 1.35
+XCVERSION ?= 1.70
 XC16 ?= /opt/microchip/xc16/v$(XCVERSION)
 CROSS_COMPILE ?= $(XC16)/bin/xc16-
 
-PARTFAMILY = dsPIC33F
-PART = 33FJ256GP506
-
 INC += -I.
+INC += -I$(BOARD_DIR)
 INC += -I$(TOP)
 INC += -I$(BUILD)
 INC += -I$(XC16)/include
@@ -26,15 +36,14 @@ CFLAGS = $(INC) -Wall -Werror -std=gnu99 -nostdlib $(CFLAGS_PIC16BIT) $(COPT)
 ifeq ($(DEBUG), 1)
 CFLAGS += -O0 -ggdb
 else
-CFLAGS += -O1 -DNDEBUG
+CFLAGS += -O2 -DNDEBUG
 endif
 
-LDFLAGS = --heap=0 -nostdlib -T $(XC16)/support/$(PARTFAMILY)/gld/p$(PART).gld -Map=$@.map --cref -p$(PART)
+LDFLAGS = --heap=0 -nostdlib --script=$(BOARD_DIR)/linker_script.ld -Map=$@.map --cref -p$(PART) --check-sections --data-init --pack-data --handles --isr --gc-sections --fill-upper=0 --stackguard=16 --no-force-link --smart-io --report-mem
 LIBS = -L$(XC16)/lib -L$(XC16)/lib/$(PARTFAMILY) -lc -lm -lpic30
 
-SRC_C = \
+SRC_C += \
 	main.c \
-	board.c \
 	pic16bit_mphal.c \
 	modpyb.c \
 	modpybled.c \
@@ -42,6 +51,7 @@ SRC_C = \
 	lib/utils/pyexec.c \
 	lib/utils/sys_stdio_mphal.c \
 	lib/mp-readline/readline.c \
+	$(wildcard $(BOARD_DIR)/*.c) \
 
 SRC_S = \
 #	gchelper.s \
